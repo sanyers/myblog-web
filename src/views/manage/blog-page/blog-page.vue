@@ -34,6 +34,8 @@
       v-model="currentItem.content"
       :theme="theme"
       :preview="false"
+      :noPrettier="true"
+      :autoDetectCode="true"
       @onSave="onSave" />
   </div>
 </template>

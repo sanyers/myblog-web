@@ -21,16 +21,28 @@
         :inverted="true"
         @update:value="handleUpdateValue" />
     </n-layout-sider>
-    <n-layout-content class="layout-content" v-if="currentIndex">
+    <n-layout-content
+      class="layout-content"
+      v-if="currentIndex"
+      id="layoutContent">
       <div class="content-title">{{ currentIndex.name }}</div>
       <div class="content-desc">
         <span>{{ getTimes }}</span>
         <span>{{ currentIndex.author }}</span>
       </div>
-      <MdPreview
-        class="content-body"
-        :modelValue="currentIndex.content"
-        :theme="theme" />
+      <div class="content-body">
+        <MdPreview
+          class="content-preview"
+          editorId="previewId"
+          :modelValue="currentIndex.content"
+          :theme="theme" />
+        <MdCatalog
+          class="content-catalog"
+          editorId="previewId"
+          :theme="theme"
+          :scrollElementOffsetTop="60"
+          :scrollElement="scrollElement" />
+      </div>
     </n-layout-content>
   </n-layout>
 </template>
@@ -43,6 +55,7 @@ import { MdPreview, MdCatalog } from 'md-editor-v3'
 import 'md-editor-v3/lib/preview.css'
 import { getTheme } from '@/utils/device'
 
+const scrollElement = ref('#layoutContent .n-layout-scroll-container')
 const route = useRoute()
 const router = useRouter()
 const collapsed = ref(false)
@@ -147,13 +160,32 @@ onMounted(() => {
       }
     }
     .content-body {
-      max-width: 840px;
-      margin: 0 auto;
-      margin-top: 20px;
-      background-color: transparent;
-      ::v-deep(table) {
-        width: 100%;
+      position: relative;
+      .content-preview {
+        background-color: transparent;
+        max-width: 840px;
+        margin: 0 auto;
+        margin-top: 20px;
+        ::v-deep(table) {
+          width: 100%;
+        }
       }
+    }
+  }
+  .content-catalog {
+    position: fixed;
+    right: 20px;
+    top: 160px;
+    bottom: 80px;
+    overflow: auto;
+    width: 200px;
+  }
+}
+
+@media only screen and (max-width: 1430px) {
+  .layout-list {
+    .content-catalog {
+      display: none;
     }
   }
 }
