@@ -9,14 +9,6 @@ export const getComment = (params: any) => {
   })
 }
 
-// 查询最近博客评论
-export const getCommentLast = () => {
-  return axios.request({
-    method: 'get',
-    url: '/comment/last',
-  })
-}
-
 // 博客评论
 export const commentUpdate = (data: any) => {
   return axios.request({

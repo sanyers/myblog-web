@@ -75,6 +75,14 @@ const routes: Array<RouteRecordRaw> = [
           title: '评论管理',
         },
       },
+      {
+        path: 'user-info',
+        name: 'user-info',
+        component: () => import('@/views/manage/user-info/user-info.vue'),
+        meta: {
+          title: '用户信息',
+        },
+      },
     ],
   },
 ]

@@ -68,3 +68,12 @@ export const blogDelete = (data: any) => {
     data,
   })
 }
+
+// 发布博客
+export const blogRelease = (data: any) => {
+  return axios.request({
+    method: 'post',
+    url: '/blog/release',
+    data,
+  })
+}

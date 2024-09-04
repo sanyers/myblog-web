@@ -16,3 +16,11 @@ export const userLogout = () => {
     url: '/user/logout',
   })
 }
+
+// 获取登录信息
+export const userInfo = () => {
+  return axios.request({
+    method: 'get',
+    url: '/user/info',
+  })
+}

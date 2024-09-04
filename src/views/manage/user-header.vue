@@ -44,7 +44,7 @@ import { LOGIN_CONF } from '@/config'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { setTheme } from '@/utils/device'
-import { userLogout } from '@/api/user'
+import { userLogout, userInfo } from '@/api/user'
 
 type NavItem = {
   label: string | any
@@ -63,14 +63,15 @@ const router = useRouter()
 const userName = ref('')
 const emits = defineEmits(['on-router'])
 
-onMounted(() => {
-  const isKey = localStorage.getItem(LOGIN_CONF.KEY)
-  const name = localStorage.getItem(LOGIN_CONF.NAME)
-  if (isKey && name) {
-    userName.value = localStorage.getItem(LOGIN_CONF.NAME)
-  } else {
-    router.push({ name: 'login', query: { url: location.href } })
+const getUser = async () => {
+  const { data } = await userInfo()
+  if (data) {
+    userName.value = data.userName
   }
+}
+
+onMounted(() => {
+  getUser()
 })
 
 const onLogout = async () => {
@@ -81,8 +82,8 @@ const onLogout = async () => {
 }
 
 const onInfor = () => {
-  emits('on-router', 'userInfor')
-  router.push({ name: 'userInfor' })
+  emits('on-router', 'user-info')
+  router.push({ name: 'user-info' })
 }
 
 const onNav = (item: any) => {

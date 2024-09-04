@@ -9,4 +9,18 @@ export type BlogItem = {
   content: string
   author: string
   authorLink: string
+  release: boolean
+  desc?: string
+}
+
+export type CommentItem = {
+  id: number
+  quoteId?: number
+  userName: string
+  email?: string
+  blogId: string
+  ctime: number
+  desc: string
+  isAuthor: boolean
+  isShow: boolean
 }

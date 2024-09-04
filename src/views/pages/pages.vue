@@ -1,5 +1,7 @@
 <template>
-  <n-layout class="pages-layout">
+  <n-layout
+    class="pages-layout"
+    :style="{ '--border-color': themeVars.borderColor }">
     <n-layout-header class="pages-header">
       <div class="header-left">
         <img class="logo" src="/logo.png" />
@@ -19,22 +21,26 @@
         </ul>
       </div>
       <div class="header-right">
+        <i class="iconfont icon-search" @click="onSearch"></i>
         <i class="iconfont icon-baitian" @click="setTheme()"></i>
       </div>
     </n-layout-header>
     <div class="pages-view">
       <router-view />
     </div>
+    <SearchInput ref="searchInputRef" />
   </n-layout>
 </template>
 <script setup lang="ts">
 import { onMounted, ref, h, VNodeChild } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useMessage, useDialog, DropdownOption } from 'naive-ui'
+import { useMessage, useDialog, DropdownOption, useThemeVars } from 'naive-ui'
 import { setTheme } from '@/utils/device'
 import { categoryList } from '@/api/category'
 import { CategoryItem } from './data'
+import SearchInput from './components/search-input.vue'
 
+const themeVars = useThemeVars()
 window.$message = useMessage()
 window.$dialog = useDialog()
 const route = useRoute()
@@ -42,6 +48,7 @@ const router = useRouter()
 const title = ref('sanyer')
 const categoryData = ref<CategoryItem[]>([])
 let oldOption: DropdownOption = null
+const searchInputRef = ref()
 
 const getCategoryData = async () => {
   const types = route.params.types as Array<string>
@@ -99,6 +106,10 @@ const handleSelect = (type1: string, type2: string, option: DropdownOption) => {
   router.push({ name: 'list', params: { types: [type1, type2] } })
 }
 
+const onSearch = () => {
+  searchInputRef.value.show()
+}
+
 onMounted(() => {
   getCategoryData()
 })
@@ -132,6 +143,7 @@ onMounted(() => {
         font-size: 16px;
         .nav-item {
           margin-right: 24px;
+          font-size: 14px;
           cursor: pointer;
           &:hover {
             color: #36ad6a;
