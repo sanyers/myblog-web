@@ -29,7 +29,7 @@ export const getBlogList = (params: any) => {
 // 最近更新列表
 export const getBlogLast = () => {
   return axios.request({
-    method: 'get',
+    method: 'post',
     url: '/blog/last',
   })
 }
@@ -46,7 +46,7 @@ export const blogUpdate = (data: any) => {
 // 查询置顶博客
 export const getBlogTop = () => {
   return axios.request({
-    method: 'get',
+    method: 'post',
     url: '/blog/top',
   })
 }
@@ -75,5 +75,15 @@ export const blogRelease = (data: any) => {
     method: 'post',
     url: '/blog/release',
     data,
+  })
+}
+
+// 上传博客图片
+export const blogUploadImage = (data: any, onUploadProgress: any) => {
+  return axios.request({
+    method: 'post',
+    url: '/blog/file',
+    data,
+    onUploadProgress,
   })
 }

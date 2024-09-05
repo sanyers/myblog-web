@@ -74,8 +74,8 @@
       :theme="theme"
       :preview="false"
       :noPrettier="true"
-      :autoDetectCode="true"
-      @onSave="onSave" />
+      @onSave="onSave"
+      @onUploadImg="onUploadImg" />
   </div>
 </template>
 <script setup lang="ts">
@@ -87,6 +87,7 @@ import {
   blogDelete,
   blogRelease,
   blogTop,
+  blogUploadImage,
 } from '@/api/blog'
 import { CategoryItem } from '../../pages/data'
 import type { TreeOption } from 'naive-ui'
@@ -236,6 +237,20 @@ const onRelease = (item?: BlogItem) => {
       }
     },
   })
+}
+
+const onUploadImg = async (files: File[], callback: any) => {
+  const d = new FormData()
+  d.append('id', currentItem.value._id)
+  d.append('type1', type1)
+  d.append('type2', type2)
+  files.forEach(element => {
+    d.append('file', element, element.name)
+  })
+  const { data } = await blogUploadImage(d, () => {})
+  if (data) {
+    callback(data)
+  }
 }
 
 onMounted(() => {
