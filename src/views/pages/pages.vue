@@ -4,15 +4,17 @@
     :style="{ '--border-color': themeVars.borderColor }">
     <n-layout-header class="pages-header">
       <div class="header-left">
-        <img class="logo" src="/logo.png" />
-        <span class="title">{{ title }}</span>
+        <div @click="goHome" class="to-home">
+          <img class="logo" src="/logo.png" />
+          <span class="title">{{ title }}</span>
+        </div>
 
         <ul class="nav-list">
           <li class="nav-item" @click="goHome">首页</li>
           <li class="nav-item" v-for="item in categoryData" :key="item._id">
             <n-dropdown
               trigger="hover"
-              :options="item.typeOption"
+              :options="item.children"
               :render-label="renderDropdownLabel"
               @select="(key:string,option:DropdownOption)=>handleSelect(item._id,key,option)">
               <n-button text>{{ item.name }}</n-button>
@@ -23,6 +25,13 @@
       <div class="header-right">
         <i class="iconfont icon-search" @click="onSearch"></i>
         <i class="iconfont icon-baitian" @click="setTheme()"></i>
+        <n-dropdown
+          :options="categoryData"
+          placement="bottom-start"
+          trigger="click"
+          @select="handleSelects">
+          <i class="iconfont icon-menu"></i>
+        </n-dropdown>
       </div>
     </n-layout-header>
     <div class="pages-view">
@@ -55,8 +64,10 @@ const getCategoryData = async () => {
   const { data } = await categoryList()
   if (data) {
     data.forEach((element: CategoryItem) => {
+      element.label = element.name
+      element.key = element._id
       if (element.typeList) {
-        element.typeOption = []
+        element.children = []
         element.typeList.forEach(item => {
           const isActive = types
             ? element._id === types[0] && item._id === types[1]
@@ -69,7 +80,7 @@ const getCategoryData = async () => {
           if (isActive) {
             oldOption = items
           }
-          element.typeOption.push(items)
+          element.children.push(items)
         })
       }
     })
@@ -106,6 +117,18 @@ const handleSelect = (type1: string, type2: string, option: DropdownOption) => {
   router.push({ name: 'list', params: { types: [type1, type2] } })
 }
 
+const handleSelects = (key: string, option: DropdownOption) => {
+  let type1 = ''
+  categoryData.value.forEach(element => {
+    element.children.forEach(item => {
+      if (item.key === key) {
+        type1 = element.key
+      }
+    })
+  })
+  handleSelect(type1, key, option)
+}
+
 const onSearch = () => {
   searchInputRef.value.show()
 }
@@ -128,6 +151,10 @@ onMounted(() => {
     .header-left {
       display: flex;
       align-items: center;
+      .to-home {
+        display: flex;
+        align-items: center;
+      }
       .logo {
         width: 36px;
         height: 36px;
@@ -137,30 +164,49 @@ onMounted(() => {
         font-size: 18px;
         font-weight: 600;
       }
-      .nav-list {
-        display: flex;
-        margin-left: 24px;
-        font-size: 16px;
-        .nav-item {
-          margin-right: 24px;
-          font-size: 14px;
-          cursor: pointer;
-          &:hover {
-            color: #36ad6a;
-          }
-        }
-      }
     }
     .header-right {
       .iconfont {
-        margin-left: 13px;
+        margin-left: 24px;
         font-size: 24px;
         cursor: pointer;
+      }
+      .icon-menu {
+        display: none;
+      }
+    }
+  }
+
+  .nav-list {
+    display: flex;
+    margin-left: 24px;
+    font-size: 16px;
+    .nav-item {
+      margin-right: 24px;
+      font-size: 14px;
+      cursor: pointer;
+      &:hover {
+        color: #36ad6a;
       }
     }
   }
   .pages-view {
     height: calc(100% - 60px);
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .pages-layout {
+    .nav-list {
+      display: none;
+    }
+    .pages-header {
+      .header-right {
+        .icon-menu {
+          display: inline;
+        }
+      }
+    }
   }
 }
 </style>

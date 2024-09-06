@@ -1,10 +1,10 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4639039 */
-  src: url('iconfont.eot?t=1725417077902'); /* IE9 */
-  src: url('iconfont.eot?t=1725417077902#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('iconfont.woff2?t=1725417077902') format('woff2'),
-       url('iconfont.woff?t=1725417077902') format('woff'),
-       url('iconfont.ttf?t=1725417077902') format('truetype');
+  src: url('iconfont.eot?t=1725531305376'); /* IE9 */
+  src: url('iconfont.eot?t=1725531305376#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('iconfont.woff2?t=1725531305376') format('woff2'),
+       url('iconfont.woff?t=1725531305376') format('woff'),
+       url('iconfont.ttf?t=1725531305376') format('truetype');
 }
 
 .iconfont {
@@ -13,6 +13,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-right:before {
+  content: "\e7eb";
+}
+
+.icon-left:before {
+  content: "\e7ec";
 }
 
 .icon-top:before {

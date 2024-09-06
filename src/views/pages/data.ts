@@ -11,6 +11,8 @@ export type CategoryItem = {
   utime: number
   parentId?: string
   typeList?: CategoryItem[]
-  typeOption?: Options[]
+  children?: Options[]
   isActive?: boolean
+  label: string
+  key: string
 }

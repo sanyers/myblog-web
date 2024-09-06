@@ -4,7 +4,7 @@
       class="blog-nav"
       bordered
       collapse-mode="width"
-      :collapsed-width="18"
+      :collapsed-width="0"
       :width="200"
       :collapsed="collapsed"
       show-trigger
@@ -23,7 +23,7 @@
     </n-layout-sider>
     <n-layout-content
       class="layout-content"
-      v-if="currentIndex"
+      v-if="isContent"
       id="layoutContent">
       <div class="content-title">{{ currentIndex.name }}</div>
       <div v-if="currentIndex.desc" class="content-desc">
@@ -120,11 +120,13 @@ import { getTheme } from '@/utils/device'
 import CommentInput from './components/comment-input.vue'
 import CommentReply from './components/comment-reply.vue'
 import { LOGIN_CONF } from '@/config'
+import { isMobile } from '@/utils/device'
 
 const scrollElement = ref('#layoutContent .n-layout-scroll-container')
 const route = useRoute()
 const router = useRouter()
-const collapsed = ref(false)
+const isMobiles = isMobile()
+const collapsed = ref(isMobiles)
 let blogData: BlogItem[] = []
 let types: Array<string> = []
 const menuOptions = ref([])
@@ -134,6 +136,14 @@ const theme = getTheme()
 const commentData = ref<CommentItem[]>([])
 const commentReplyRef = ref()
 const userName = ref(localStorage.getItem(LOGIN_CONF.NAME) || '')
+
+const isContent = computed(() => {
+  if (isMobiles) {
+    return collapsed.value && Boolean(currentIndex.value)
+  } else {
+    return Boolean(currentIndex.value)
+  }
+})
 
 const getQuoteItem = computed(() => {
   return function (row: CommentItem) {
@@ -179,6 +189,9 @@ const handleUpdateValue = () => {
     params: { types },
     query: { id: activeKey.value },
   })
+  if(isMobiles){
+    collapsed.value = true
+  }
 }
 
 const getBlogData = async () => {
@@ -260,6 +273,11 @@ onMounted(() => {
 <style lang="less" scoped>
 .layout-list {
   height: 100%;
+  .blog-nav {
+    ::v-deep(.n-layout-toggle-button) {
+      right: -18px;
+    }
+  }
   .menu-index {
     --n-item-text-color-hover: #18a058 !important;
     --n-item-icon-color-hover: #18a058 !important;
@@ -331,7 +349,8 @@ onMounted(() => {
             font-size: 12px;
             text-align: right;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 6px;
+            padding-bottom: 12px;
+            margin-top: 6px;
             .info-id {
               margin-right: 16px;
             }
@@ -357,6 +376,33 @@ onMounted(() => {
   .layout-list {
     .content-catalog {
       display: none;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .layout-list {
+    .layout-content {
+      .content-body {
+        .content-preview {
+          width: 100%;
+        }
+      }
+      .content-desc {
+        span {
+          display: block;
+        }
+      }
+      .content-bottom {
+        .comment-input {
+          width: 100%;
+        }
+        .comment-div {
+          .comment-list {
+            width: 100%;
+          }
+        }
+      }
     }
   }
 }

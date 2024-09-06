@@ -112,4 +112,13 @@ onMounted(() => {
     }
   }
 }
+
+@media only screen and (max-width: 768px) {
+  .home-page {
+    .page-main {
+      width: 100%;
+      padding: 20px;
+    }
+  }
+}
 </style>
