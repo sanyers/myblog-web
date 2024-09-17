@@ -11,8 +11,12 @@
               </n-button>
             </p>
             <div class="info">
-              <span>{{ item.desc || '暂无描述' }}</span>
-              <span>{{ new Date(item.utime).toLocaleString() }}</span>
+              <span class="info-desc" :title="item.desc">
+                {{ item.desc || '暂无描述' }}
+              </span>
+              <span class="info-utime">
+                {{ new Date(item.utime).toLocaleString() }}
+              </span>
             </div>
           </li>
         </ul>
@@ -28,8 +32,12 @@
               </n-button>
             </p>
             <div class="info">
-              <span>{{ item.desc || '暂无描述' }}</span>
-              <span>{{ new Date(item.utime).toLocaleString() }}</span>
+              <span class="info-desc" :title="item.desc">
+                {{ item.desc || '暂无描述' }}
+              </span>
+              <span class="info-utime">
+                {{ new Date(item.utime).toLocaleString() }}
+              </span>
             </div>
           </li>
         </ul>
@@ -108,6 +116,15 @@ onMounted(() => {
         justify-content: space-between;
         font-size: 12px;
         margin-top: 4px;
+        .info-desc {
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          flex: 1;
+        }
+        .info-utime {
+          margin-left: 16px;
+        }
       }
     }
   }

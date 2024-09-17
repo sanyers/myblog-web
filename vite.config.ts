@@ -19,7 +19,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // 入口文件名
-        entryFileNames: 'assets/js/[name].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
         // // 块文件名
         chunkFileNames: 'assets/js/[name]-[hash].js',
         // // 资源文件名 css 图片等等

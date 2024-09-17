@@ -233,6 +233,7 @@ const onRelease = (item?: BlogItem) => {
           item.release = params.release
         } else {
           currentItem.value.release = params.release
+          getBlogData()
         }
       }
     },

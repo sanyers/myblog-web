@@ -26,7 +26,7 @@
       v-if="isContent"
       id="layoutContent">
       <div class="content-title">{{ currentIndex.name }}</div>
-      <div v-if="currentIndex.desc" class="content-desc">
+      <div v-if="currentIndex.desc" class="content-desc" style="margin: 12px 0">
         {{ currentIndex.desc }}
       </div>
       <div class="content-desc">
@@ -39,17 +39,37 @@
         <span>{{ currentIndex.author }}</span>
       </div>
       <div class="content-body">
+        <!-- 预览组件 -->
         <MdPreview
           class="content-preview"
           editorId="previewId"
           :modelValue="currentIndex.content"
-          :theme="theme" />
+          :theme="theme"
+          noImgZoomIn
+          @click="onPreview" />
+        <!-- 目录组件 -->
         <MdCatalog
           class="content-catalog"
           editorId="previewId"
           :theme="theme"
           :scrollElementOffsetTop="60"
           :scrollElement="scrollElement" />
+      </div>
+
+      <div class="nav-btn">
+        <div v-if="prveItem" style="margin-bottom: 6px">
+          <span>上一篇：</span>
+          <n-button text type="info" @click="toNav(prveItem._id)">
+            {{ prveItem.name }}
+          </n-button>
+        </div>
+
+        <div v-if="nextItem">
+          <span>下一篇：</span>
+          <n-button text type="info" @click="toNav(nextItem._id)">
+            {{ nextItem.name }}
+          </n-button>
+        </div>
       </div>
 
       <div class="content-bottom">
@@ -109,7 +129,7 @@
   </n-layout>
 </template>
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from 'vue'
+import { h, ref, watch, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getBlogList } from '@/api/blog'
 import { getComment, commentVerify, commentDelete } from '@/api/comment'
@@ -121,6 +141,8 @@ import CommentInput from './components/comment-input.vue'
 import CommentReply from './components/comment-reply.vue'
 import { LOGIN_CONF } from '@/config'
 import { isMobile } from '@/utils/device'
+import { NEllipsis } from 'naive-ui'
+import { previewImage } from '@/utils/previewImage'
 
 const scrollElement = ref('#layoutContent .n-layout-scroll-container')
 const route = useRoute()
@@ -137,6 +159,30 @@ const commentData = ref<CommentItem[]>([])
 const commentReplyRef = ref()
 const userName = ref(localStorage.getItem(LOGIN_CONF.NAME) || '')
 
+const prveItem = computed(() => {
+  let item: BlogItem | null = null
+  if (blogData.length) {
+    const idx = blogData.findIndex(i => i._id === activeKey.value)
+    const prveIdx = idx - 1
+    if (prveIdx > -1) {
+      item = blogData[prveIdx]
+    }
+  }
+  return item
+})
+
+const nextItem = computed(() => {
+  let item: BlogItem | null = null
+  if (blogData.length) {
+    const idx = blogData.findIndex(i => i._id === activeKey.value)
+    const prveIdx = idx + 1
+    if (prveIdx < blogData.length) {
+      item = blogData[prveIdx]
+    }
+  }
+  return item
+})
+
 const isContent = computed(() => {
   if (isMobiles) {
     return collapsed.value && Boolean(currentIndex.value)
@@ -150,6 +196,13 @@ const getQuoteItem = computed(() => {
     return commentData.value.find(i => i.id === row.quoteId)
   }
 })
+
+const onPreview = (e: any) => {
+  const target = e.target
+  if (target.className === 'md-zoom') {
+    previewImage(target.src)
+  }
+}
 
 const getPageType = () => {
   const type = route.params.types as Array<string>
@@ -182,6 +235,20 @@ watch(
   { immediate: false },
 )
 
+const toNav = (id: string) => {
+  activeKey.value = id
+  handleUpdateValue()
+}
+
+const setScrollTop = () => {
+  const d = document
+    .getElementById('layoutContent')
+    ?.querySelector('.n-layout-scroll-container')
+  if (d) {
+    d.scrollTop = 0
+  }
+}
+
 const handleUpdateValue = () => {
   currentIndex.value = blogData.find(i => i._id === activeKey.value)
   router.push({
@@ -189,9 +256,10 @@ const handleUpdateValue = () => {
     params: { types },
     query: { id: activeKey.value },
   })
-  if(isMobiles){
+  if (isMobiles) {
     collapsed.value = true
   }
+  setScrollTop()
 }
 
 const getBlogData = async () => {
@@ -204,7 +272,7 @@ const getBlogData = async () => {
   const { data } = await getBlogList(params)
   if (data) {
     menuOptions.value = data.list.map((i: BlogItem) => ({
-      label: i.name,
+      label: () => h(NEllipsis, null, { default: () => i.name }),
       key: i._id,
     }))
     blogData = data.list
@@ -218,6 +286,7 @@ const getBlogData = async () => {
     activeKey.value = id
     currentIndex.value = blogData[idx]
     router.push({ params: { types }, query: { id } })
+    setScrollTop()
   }
 }
 
@@ -370,6 +439,12 @@ onMounted(() => {
     overflow: auto;
     width: 200px;
   }
+
+  .nav-btn {
+    width: 800px;
+    margin: 0 auto;
+    margin-top: 20px;
+  }
 }
 
 @media only screen and (max-width: 1430px) {
@@ -403,6 +478,10 @@ onMounted(() => {
           }
         }
       }
+    }
+
+    .nav-btn {
+      width: 100%;
     }
   }
 }
