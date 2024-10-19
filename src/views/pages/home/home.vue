@@ -11,9 +11,15 @@
               </n-button>
             </p>
             <div class="info">
-              <span class="info-desc" :title="item.desc">
+              <!-- <span class="info-desc" :title="item.desc">
                 {{ item.desc || '暂无描述' }}
-              </span>
+              </span> -->
+              <div class="info-tag">
+                <n-tag> {{ getType(item.type1) }} </n-tag>
+                <n-tag>
+                  {{ getTypes(item.type1, item.type2) }}
+                </n-tag>
+              </div>
               <span class="info-utime">
                 {{ new Date(item.utime).toLocaleString() }}
               </span>
@@ -32,9 +38,15 @@
               </n-button>
             </p>
             <div class="info">
-              <span class="info-desc" :title="item.desc">
+              <!-- <span class="info-desc" :title="item.desc">
                 {{ item.desc || '暂无描述' }}
-              </span>
+              </span> -->
+              <div class="info-tag">
+                <n-tag> {{ getType(item.type1) }} </n-tag>
+                <n-tag>
+                  {{ getTypes(item.type1, item.type2) }}
+                </n-tag>
+              </div>
               <span class="info-utime">
                 {{ new Date(item.utime).toLocaleString() }}
               </span>
@@ -42,18 +54,39 @@
           </li>
         </ul>
       </div>
+
+      <p class="copyright">
+        <span>Copyright © 2021-2024 sanyer | </span>
+        <n-button text type="info" @click="onOldLink">旧版</n-button>
+      </p>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getBlogTop, getBlogLast } from '@/api/blog'
+import { categoryList } from '@/api/category'
 import { BlogItem } from '../list/data'
+import { CategoryItem } from '../data'
 
 const router = useRouter()
 const topList = ref<BlogItem[]>([])
 const lastList = ref<BlogItem[]>([])
+let typeList: Array<CategoryItem> = []
+
+const getType = computed(() => {
+  return function (id: string) {
+    return typeList.find(i => i._id === id).name
+  }
+})
+
+const getTypes = computed(() => {
+  return function (type1: string, type2: string) {
+    const item = typeList.find(i => i._id === type1)
+    return item.typeList.find(i => i._id === type2).name
+  }
+})
 
 const getTopData = async () => {
   const { data } = await getBlogTop()
@@ -69,6 +102,13 @@ const getLastData = async () => {
   }
 }
 
+const getCategoryData = async () => {
+  const { data } = await categoryList()
+  if (data) {
+    typeList = data
+  }
+}
+
 const onLink = (item: BlogItem) => {
   const types = [item.type1, item.type2]
   router.push({
@@ -78,7 +118,13 @@ const onLink = (item: BlogItem) => {
   })
 }
 
-onMounted(() => {
+const onOldLink = () => {
+  const url = 'https://sanyer.top/blog/'
+  window.open(url, '_blank')
+}
+
+onMounted(async () => {
+  await getCategoryData()
   getTopData()
   getLastData()
 })
@@ -116,17 +162,26 @@ onMounted(() => {
         justify-content: space-between;
         font-size: 12px;
         margin-top: 4px;
-        .info-desc {
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          flex: 1;
+        // .info-desc {
+        //   white-space: nowrap;
+        //   text-overflow: ellipsis;
+        //   overflow: hidden;
+        //   flex: 1;
+        // }
+        .info-tag {
+          .n-tag {
+            margin-right: 16px;
+          }
         }
         .info-utime {
           margin-left: 16px;
         }
       }
     }
+  }
+
+  .copyright {
+    text-align: center;
   }
 }
 

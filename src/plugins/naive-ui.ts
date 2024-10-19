@@ -45,6 +45,7 @@ import {
   NLayoutHeader,
   NDropdown,
   NTree,
+  NTag,
 } from 'naive-ui'
 
 declare global {
@@ -99,6 +100,7 @@ const naive = create({
     NMenu,
     NDropdown,
     NTree,
+    NTag,
   ],
 })
 

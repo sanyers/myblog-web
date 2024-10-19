@@ -25,8 +25,12 @@
       <div class="header-right">
         <i class="iconfont icon-search" @click="onSearch"></i>
         <i class="iconfont icon-baitian" @click="setTheme()"></i>
+        <label class="link">
+          <i class="iconfont icon-jianshu" @click="onLinkJian"></i>
+          <i class="iconfont icon-github" @click="onLinkGithub"></i>
+        </label>
         <n-dropdown
-          :options="categoryData"
+          :options="[...categoryData, ...linkOptions]"
           placement="bottom-start"
           trigger="click"
           @select="handleSelects">
@@ -58,6 +62,10 @@ const title = ref('sanyer')
 const categoryData = ref<CategoryItem[]>([])
 let oldOption: DropdownOption = null
 const searchInputRef = ref()
+const linkOptions = [
+  { key: 'jianshu', label: '简书' },
+  { key: 'github', label: 'Github' },
+]
 
 const getCategoryData = async () => {
   const types = route.params.types as Array<string>
@@ -118,6 +126,14 @@ const handleSelect = (type1: string, type2: string, option: DropdownOption) => {
 }
 
 const handleSelects = (key: string, option: DropdownOption) => {
+  if (key === 'jianshu') {
+    onLinkJian()
+    return
+  }
+  if (key === 'github') {
+    onLinkGithub()
+    return
+  }
   let type1 = ''
   categoryData.value.forEach(element => {
     element.children.forEach(item => {
@@ -131,6 +147,16 @@ const handleSelects = (key: string, option: DropdownOption) => {
 
 const onSearch = () => {
   searchInputRef.value.show()
+}
+
+const onLinkJian = () => {
+  const url = 'https://www.jianshu.com/u/126bb2363acb'
+  window.open(url, '_blank')
+}
+
+const onLinkGithub = () => {
+  const url = 'https://github.com/sanyers'
+  window.open(url, '_blank')
 }
 
 onMounted(() => {
@@ -204,6 +230,9 @@ onMounted(() => {
       .header-right {
         .icon-menu {
           display: inline;
+        }
+        .link {
+          display: none;
         }
       }
     }
