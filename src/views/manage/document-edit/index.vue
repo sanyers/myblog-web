@@ -349,6 +349,9 @@ onMounted(async () => {
       pre > code {
         text-shadow: none !important;
       }
+      a {
+        color: #4290f7;
+      }
     }
     ::v-deep(.w-e-textarea-video-container) {
       background-image: none !important;

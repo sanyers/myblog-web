@@ -70,6 +70,9 @@ onMounted(() => {
     height: 100%;
     .layout-content {
       padding: 13px;
+      ::v-deep(.n-layout-scroll-container) {
+        overflow: hidden;
+      }
     }
     .layout-div {
       height: calc(100% - 61px);

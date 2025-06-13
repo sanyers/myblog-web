@@ -443,6 +443,9 @@ onMounted(() => {
     video {
       max-width: 100%;
     }
+    a {
+      color: #4290f7;
+    }
   }
 
   .comment-list {
