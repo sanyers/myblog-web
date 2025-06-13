@@ -39,7 +39,7 @@ const userFormValue = ref(userLoginData())
 const userFormRef = ref()
 const onUserLogin = () => {
   userFormRef.value?.validate(async (d: any) => {
-    const fn = isInit ? userLogin : setUserInit
+    const fn = isInit.value ? userLogin : setUserInit
     const { data } = await fn(d)
     if (data) {
       logoSuccess(data)

@@ -10,4 +10,5 @@ export const LOGIN_CONF = {
   role: STORAGE_PREFIX + 'role',
   user: STORAGE_PREFIX + 'user',
   email: STORAGE_PREFIX + 'email',
+  formatEdit: STORAGE_PREFIX + 'formatEdit', // 编辑器默认格式
 }

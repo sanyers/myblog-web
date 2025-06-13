@@ -20,7 +20,8 @@
           class="input-item"
           style="width: 150px"
           v-model:value="formatValue"
-          :options="formatOptions" />
+          :options="formatOptions"
+          @update:value="onUpdateFormat" />
 
         <span>栏目：</span>
         <n-select
@@ -232,6 +233,10 @@ const onSave = async () => {
   }
 }
 
+const onUpdateFormat = () => {
+  localStorage.setItem(LOGIN_CONF.formatEdit, formatValue.value)
+}
+
 const onUpdateType = (isInit: boolean) => {
   const item = categoryData.find(i => i._id === documentInfo.value.type1)
   if (item) {
@@ -273,6 +278,7 @@ onMounted(async () => {
     id = _id as string
     await getBlogbyInfo()
   } else if (_types === '0') {
+    formatValue.value = localStorage.getItem(LOGIN_CONF.formatEdit) || 'md'
     documentInfo.value = {
       _id: '',
       name: '',

@@ -29,6 +29,30 @@
           <i class="iconfont icon-jianshu" @click="onLinkJian"></i>
           <i class="iconfont icon-github" @click="onLinkGithub"></i>
         </label>
+        <template v-if="isLogin">
+          <i
+            v-if="!userName"
+            class="iconfont icon-user"
+            title="登录到后台"
+            @click="onLogin"></i>
+          <template v-else>
+            <n-popover placement="bottom">
+              <template #trigger>
+                <label class="label-item">
+                  <i class="iconfont icon-user"></i>
+                  {{ userName }}
+                </label>
+              </template>
+              <div>
+                <p style="cursor: pointer" @click="onManage">进入后台</p>
+                <p style="cursor: pointer; margin-top: 6px" @click="onLogout">
+                  退出登录
+                </p>
+              </div>
+            </n-popover>
+          </template>
+        </template>
+
         <n-dropdown
           v-if="isLinks"
           :options="[...categoryData, ...linkOptions]"
@@ -46,13 +70,15 @@
   </n-layout>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, h, VNodeChild } from 'vue'
+import { h, ref, VNodeChild, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMessage, useDialog, DropdownOption, useThemeVars } from 'naive-ui'
 import { setTheme } from '@/utils/device'
 import { categoryList } from '@/api/category'
 import { CategoryItem } from '@/utils/types'
 import SearchInput from './components/search-input.vue'
+import { LOGIN_CONF } from '@/config'
+import { userLogout } from '@/api/user'
 
 const themeVars = useThemeVars()
 window.$message = useMessage()
@@ -69,6 +95,8 @@ const linkOptions = [
 ]
 
 const isLinks = import.meta.env.VITE_JIANSHU ? true : false
+const isLogin = import.meta.env.VITE_LOGIN_SHOW === 'true' ? true : false
+const userName = ref('')
 
 const getCategoryData = async () => {
   const types = route.params.types as Array<string>
@@ -162,7 +190,24 @@ const onLinkGithub = () => {
   window.open(url, '_blank')
 }
 
+const onLogin = () => {
+  router.push({ name: 'login' })
+}
+
+const onManage = () => {
+  router.push({ name: 'manage' })
+}
+
+const onLogout = async () => {
+  await userLogout()
+  localStorage.setItem(LOGIN_CONF.NAME, '')
+  localStorage.setItem(LOGIN_CONF.KEY, '')
+  router.push({ name: 'login' })
+}
+
 onMounted(() => {
+  userName.value = localStorage.getItem(LOGIN_CONF.NAME)
+  console.log(111)
   getCategoryData()
 })
 </script>
