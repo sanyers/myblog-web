@@ -25,7 +25,7 @@
       <div class="header-right">
         <i class="iconfont icon-search" @click="onSearch"></i>
         <i class="iconfont icon-baitian" @click="setTheme()"></i>
-        <label class="link">
+        <label class="link" v-if="isLinks">
           <i class="iconfont icon-jianshu" @click="onLinkJian"></i>
           <i class="iconfont icon-github" @click="onLinkGithub"></i>
         </label>
@@ -34,7 +34,7 @@
           placement="bottom-start"
           trigger="click"
           @select="handleSelects">
-          <i class="iconfont icon-menu"></i>
+          <i class="iconfont icon-menu" v-if="isLinks"></i>
         </n-dropdown>
       </div>
     </n-layout-header>
@@ -50,7 +50,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useMessage, useDialog, DropdownOption, useThemeVars } from 'naive-ui'
 import { setTheme } from '@/utils/device'
 import { categoryList } from '@/api/category'
-import { CategoryItem } from './data'
+import { CategoryItem } from '@/utils/types'
 import SearchInput from './components/search-input.vue'
 
 const themeVars = useThemeVars()
@@ -58,7 +58,7 @@ window.$message = useMessage()
 window.$dialog = useDialog()
 const route = useRoute()
 const router = useRouter()
-const title = ref('sanyer')
+const title = ref(import.meta.env.VITE_TITLE)
 const categoryData = ref<CategoryItem[]>([])
 let oldOption: DropdownOption = null
 const searchInputRef = ref()
@@ -66,6 +66,7 @@ const linkOptions = [
   { key: 'jianshu', label: '简书' },
   { key: 'github', label: 'Github' },
 ]
+const isLinks = import.meta.env.VITE_JIANSHU ? true : false
 
 const getCategoryData = async () => {
   const types = route.params.types as Array<string>
@@ -150,12 +151,12 @@ const onSearch = () => {
 }
 
 const onLinkJian = () => {
-  const url = 'https://www.jianshu.com/u/126bb2363acb'
+  const url = import.meta.env.VITE_JIANSHU
   window.open(url, '_blank')
 }
 
 const onLinkGithub = () => {
-  const url = 'https://github.com/sanyers'
+  const url = import.meta.env.VITE_GITHUB
   window.open(url, '_blank')
 }
 

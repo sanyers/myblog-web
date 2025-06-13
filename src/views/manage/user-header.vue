@@ -1,7 +1,8 @@
 <template>
   <div class="user-header">
     <div class="header-left">
-      <span class="title">我的博客管理系统</span>
+      <img src="/logo.png" />
+      <span class="title">{{ title }}</span>
       <n-popover placement="bottom" trigger="click">
         <template #trigger>
           <i class="iconfont icon-menu"></i>
@@ -62,6 +63,7 @@ defineProps({
 const router = useRouter()
 const userName = ref('')
 const emits = defineEmits(['on-router'])
+const title = import.meta.env.VITE_MANAGE
 
 const getUser = async () => {
   const { data } = await userInfo()
@@ -102,6 +104,12 @@ const onNav = (item: any) => {
   border-bottom: 1px solid var(--n-border-color);
   .header-left {
     font-size: 20px;
+    display: flex;
+    align-items: center;
+    img {
+      width: 32px;
+      margin-right: 10px;
+    }
     .iconfont {
       display: none;
       font-size: 24px;

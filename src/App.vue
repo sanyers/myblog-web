@@ -1,5 +1,9 @@
 <template>
-  <n-config-provider :locale="locale" :date-locale="dateLocale" :theme="theme">
+  <n-config-provider
+    :locale="locale"
+    :date-locale="dateLocale"
+    :theme="theme"
+    :class="themes">
     <n-dialog-provider>
       <n-message-provider>
         <n-notification-provider>
@@ -17,15 +21,20 @@ import { getLanguage, getTheme } from '@/utils/device'
 const locale = ref(null)
 const dateLocale = ref(null)
 const theme = ref(null)
+const themes = ref('')
 onMounted(() => {
-  const lang = getLanguage()
-  if (lang === 'zh') {
-    locale.value = zhCN
-    dateLocale.value = dateZhCN
-  }
   const style = getTheme()
   if (style === 'dark') {
     theme.value = darkTheme
+    themes.value = 'dark'
+  } else {
+    themes.value = 'bright'
+  }
+
+  const lang = getLanguage()
+  if (lang === 'zh-CN') {
+    locale.value = zhCN
+    dateLocale.value = dateZhCN
   }
 })
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="comment-input">
-    <div class="input-info">
+    <div class="input-info" v-if="!isUserLogin">
       <span class="label">昵称：</span>
       <n-input v-model:value="userName" placeholder="请输入昵称" />
       <span class="label" style="margin-left: 24px">邮箱：</span>
@@ -20,7 +20,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
 import { commentUpdate } from '@/api/comment'
 import { LOGIN_CONF } from '@/config'
 
@@ -39,6 +39,9 @@ const props = defineProps({
   },
 })
 
+const isUserLogin = computed(() => {
+  return localStorage.getItem(LOGIN_CONF.NAME) ? true : false
+})
 const userName = ref(
   localStorage.getItem(LOGIN_CONF.NAME) ||
     localStorage.getItem(LOGIN_CONF.user) ||

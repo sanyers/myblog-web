@@ -7,6 +7,7 @@ export const LOGIN_CONF = {
   NAME: STORAGE_PREFIX + 'LOGIN_USER_NAME',
   LANGUAGE: STORAGE_PREFIX + 'LANGUAGE',
   THEME: STORAGE_PREFIX + 'THEME',
+  role: STORAGE_PREFIX + 'role',
   user: STORAGE_PREFIX + 'user',
   email: STORAGE_PREFIX + 'email',
 }

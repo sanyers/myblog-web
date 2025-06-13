@@ -2,26 +2,29 @@ import { LOGIN_CONF } from '@/config'
 
 export const getLanguage = () => {
   const local = localStorage.getItem(LOGIN_CONF.LANGUAGE)
-  const language = (navigator.language || 'zh').toLowerCase().split('-')[0]
-  const lang = local || language
+  const lang = local || navigator.language
   return lang
 }
 
 export const setLanguage = (lang?: string) => {
   if (!lang) {
     const lg = getLanguage()
-    lang = lg === 'zh' ? 'en' : 'zh'
+    lang = lg === 'zh-CN' ? 'en-US' : 'zh-CN'
   }
   localStorage.setItem(LOGIN_CONF.LANGUAGE, lang)
   location.reload()
 }
 
-export const getTheme = () => localStorage.getItem(LOGIN_CONF.THEME)
+export const getTheme = () => localStorage.getItem(LOGIN_CONF.THEME) || 'dark'
 
 export const setTheme = (theme?: string) => {
   if (!theme) {
     const t = getTheme()
-    theme = t ? '' : 'dark'
+    if (t === 'dark') {
+      theme = 'bright'
+    } else {
+      theme = 'dark'
+    }
   }
   localStorage.setItem(LOGIN_CONF.THEME, theme)
   location.reload()

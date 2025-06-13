@@ -10,7 +10,7 @@ export default defineConfig({
     vue(),
     viteCompression({
       algorithm: 'gzip',
-      threshold: 204800,
+      threshold: 81920, // 大于 80k 则压缩 gzip
       verbose: false,
       deleteOriginFile: false,
     }),

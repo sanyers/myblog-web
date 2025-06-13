@@ -33,7 +33,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getBlogSearch } from '@/api/blog'
-import { BlogItem } from '../list/data'
+import { BlogItem } from '@/utils/types'
 
 const router = useRouter()
 const showModal = ref(false)

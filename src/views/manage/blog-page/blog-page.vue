@@ -89,9 +89,8 @@ import {
   blogTop,
   blogUploadImage,
 } from '@/api/blog'
-import { CategoryItem } from '../../pages/data'
 import type { TreeOption } from 'naive-ui'
-import { BlogItem } from '@/views/pages/list/data'
+import { BlogItem, CategoryItem } from '@/utils/types'
 import { getTheme } from '@/utils/device'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'

@@ -1,10 +1,20 @@
 import { axios } from './http'
 
 // 根据ID获取博客
-export const getBlogbyId = () => {
+export const getBlogbyId = (params: any) => {
   return axios.request({
     method: 'get',
     url: '/blog',
+    params,
+  })
+}
+
+// 根据ID获取博客（后台）
+export const getBlogbyIds = (params: any) => {
+  return axios.request({
+    method: 'get',
+    url: '/blogs',
+    params,
   })
 }
 
@@ -26,10 +36,19 @@ export const getBlogList = (params: any) => {
   })
 }
 
+// 按类别查询博客列表（后台操作）
+export const getBlogLists = (params: any) => {
+  return axios.request({
+    method: 'get',
+    url: '/blog/lists',
+    params,
+  })
+}
+
 // 最近更新列表
 export const getBlogLast = () => {
   return axios.request({
-    method: 'post',
+    method: 'get',
     url: '/blog/last',
   })
 }
@@ -43,10 +62,19 @@ export const blogUpdate = (data: any) => {
   })
 }
 
+// 修改博客创建时间
+export const blogTime = (data: any) => {
+  return axios.request({
+    method: 'post',
+    url: '/blog/time',
+    data,
+  })
+}
+
 // 查询置顶博客
 export const getBlogTop = () => {
   return axios.request({
-    method: 'post',
+    method: 'get',
     url: '/blog/top',
   })
 }
@@ -69,7 +97,7 @@ export const blogDelete = (data: any) => {
   })
 }
 
-// 发布博客
+// 发布与取消发布
 export const blogRelease = (data: any) => {
   return axios.request({
     method: 'post',
@@ -85,5 +113,14 @@ export const blogUploadImage = (data: any, onUploadProgress: any) => {
     url: '/blog/file',
     data,
     onUploadProgress,
+  })
+}
+
+// 设置博客类型
+export const setBlogType = (data: any) => {
+  return axios.request({
+    method: 'post',
+    url: '/blog/settype',
+    data,
   })
 }

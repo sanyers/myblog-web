@@ -1,10 +1,10 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4639039 */
-  src: url('iconfont.eot?t=1729244069607'); /* IE9 */
-  src: url('iconfont.eot?t=1729244069607#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('iconfont.woff2?t=1729244069607') format('woff2'),
-       url('iconfont.woff?t=1729244069607') format('woff'),
-       url('iconfont.ttf?t=1729244069607') format('truetype');
+  src: url('iconfont.eot?t=1749801440505'); /* IE9 */
+  src: url('iconfont.eot?t=1749801440505#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('iconfont.woff2?t=1749801440505') format('woff2'),
+       url('iconfont.woff?t=1749801440505') format('woff'),
+       url('iconfont.ttf?t=1749801440505') format('truetype');
 }
 
 .iconfont {
@@ -13,6 +13,42 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-refresh:before {
+  content: "\e635";
+}
+
+.icon-query:before {
+  content: "\e609";
+}
+
+.icon-edit-time:before {
+  content: "\e605";
+}
+
+.icon-edit-menu:before {
+  content: "\e873";
+}
+
+.icon-doc:before {
+  content: "\e602";
+}
+
+.icon-chat:before {
+  content: "\e699";
+}
+
+.icon-more:before {
+  content: "\e67d";
+}
+
+.icon-role:before {
+  content: "\e62b";
+}
+
+.icon-users:before {
+  content: "\e62d";
 }
 
 .icon-jianshu:before {

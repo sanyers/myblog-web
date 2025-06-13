@@ -13,6 +13,14 @@ declare module 'axios' {
      * 是否返回原始数据
      */
     cbInit?: boolean
+    /**
+     * 接口返回错误时，不显示错误提示（默认显示错误提示）
+     */
+    isNotMsg?: boolean
+    /**
+     * 请求不带token
+     */
+    isNotToken?: boolean
   }
   export interface AxiosRequestConfig extends IAxiosRequestConfig {}
 }
@@ -33,7 +41,7 @@ function instances(instance: any) {
   instance.interceptors.request.use(
     (config: any) => {
       const sn = localStorage.getItem(LOGIN_CONF.KEY)
-      if (sn) {
+      if (sn && !config.headers.token && !config.isNotToken) {
         config.headers.authorization = sn
       }
       return config
@@ -55,13 +63,17 @@ function instances(instance: any) {
         return response
       }
 
+      if (response.config.responseType === 'stream') {
+        return response
+      }
+
       // 特殊操作直接返回
       if (response.config.cbInit) {
         return response
       }
 
       if (response.data) {
-        if (response.data.code !== 200) {
+        if (response.data.code && response.data.code !== 200) {
           messageErrorTime(response.data.msg)
           return {}
         } else {
@@ -73,7 +85,7 @@ function instances(instance: any) {
       }
     },
     (error: any) => {
-      if (error.response) {
+      if (error.response && !error.config.isNotMsg) {
         const status: number = error.response.status
         if (status === 401) {
           localStorage.setItem(LOGIN_CONF.KEY, '')
@@ -83,6 +95,7 @@ function instances(instance: any) {
           return {}
         }
       }
+      return error
     },
   )
 }

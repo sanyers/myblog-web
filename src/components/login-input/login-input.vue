@@ -11,7 +11,7 @@
             :data="userFormValue"
             @on-password-enter="onUserLogin" />
           <n-button type="info" block @click="onUserLogin">
-            {{ loginText.button }}
+            {{ isInit ? loginText.button : loginText.reButton }}
           </n-button>
         </n-tab-pane>
       </n-tabs>
@@ -19,10 +19,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
-import SfForm from '@/components/st-form.vue'
+import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { userLogin } from '@/api/user'
+import SfForm from '@/components/st-form.vue'
+import { userLogin, userInit, setUserInit } from '@/api/user'
 import userData from './user-data'
 import { LOGIN_CONF } from '@/config'
 import { getTheme } from '@/utils/device'
@@ -33,12 +33,14 @@ const route = useRoute()
 const router = useRouter()
 const isLogon = ref(true)
 const isDark = ref(getTheme())
+const isInit = ref(false)
 
 const userFormValue = ref(userLoginData())
-const userFormRef = ref(null)
+const userFormRef = ref()
 const onUserLogin = () => {
   userFormRef.value?.validate(async (d: any) => {
-    const { data } = await userLogin(d)
+    const fn = isInit ? userLogin : setUserInit
+    const { data } = await fn(d)
     if (data) {
       logoSuccess(data)
     }
@@ -48,6 +50,7 @@ const onUserLogin = () => {
 function logoSuccess(data: any) {
   localStorage.setItem(LOGIN_CONF.NAME, data.userName)
   localStorage.setItem(LOGIN_CONF.KEY, data.token)
+  localStorage.setItem(LOGIN_CONF.role, data.role)
   const url = route.query.url as string
   if (url) {
     location.href = url
@@ -55,6 +58,15 @@ function logoSuccess(data: any) {
     router.push({ path: '/manage' })
   }
 }
+
+const getUserInit = async () => {
+  const { data } = await userInit()
+  isInit.value = data
+}
+
+onMounted(() => {
+  getUserInit()
+})
 </script>
 <style lang="less" scoped>
 .login-input {

@@ -7,7 +7,7 @@
       :collapsed-width="0"
       :width="200"
       :collapsed="collapsed"
-      show-trigger
+      show-trigger="bar"
       :show-collapsed-content="false"
       @collapse="collapsed = true"
       @expand="collapsed = false">
@@ -26,9 +26,9 @@
       v-if="isContent"
       id="layoutContent">
       <div class="content-title">{{ currentIndex.name }}</div>
-      <div v-if="currentIndex.desc" class="content-desc" style="margin: 12px 0">
+      <!-- <div v-if="currentIndex.desc" class="content-desc" style="margin: 12px 0">
         {{ currentIndex.desc }}
-      </div>
+      </div> -->
       <div class="content-desc">
         <span>
           创建时间：{{ new Date(currentIndex.ctime).toLocaleString() }}
@@ -39,21 +39,27 @@
         <span>{{ currentIndex.author }}</span>
       </div>
       <div class="content-body">
-        <!-- 预览组件 -->
-        <MdPreview
-          class="content-preview"
-          editorId="previewId"
-          :modelValue="currentIndex.content"
-          :theme="theme"
-          noImgZoomIn
-          @click="onPreview" />
-        <!-- 目录组件 -->
-        <MdCatalog
-          class="content-catalog"
-          editorId="previewId"
-          :theme="theme"
-          :scrollElementOffsetTop="60"
-          :scrollElement="scrollElement" />
+        <template v-if="currentIndex.format === 'md'">
+          <!-- 预览组件 -->
+          <MdPreview
+            class="content-preview"
+            editorId="previewId"
+            :modelValue="currentIndex.content"
+            :theme="theme"
+            noImgZoomIn
+            @click="onPreview" />
+          <!-- 目录组件 -->
+          <MdCatalog
+            class="content-catalog"
+            editorId="previewId"
+            :theme="theme"
+            :scrollElementOffsetTop="60"
+            :scrollElement="scrollElement" />
+        </template>
+        <div
+          v-if="currentIndex.format === 'html'"
+          class="content-view"
+          v-html="currentIndex.content"></div>
       </div>
 
       <div class="nav-btn">
@@ -94,7 +100,6 @@
               </p>
               <p class="desc">{{ item.desc }}</p>
               <p class="info">
-                <span class="info-id" v-if="!item.isShow">未审核</span>
                 <span class="info-id">{{ item.id }}楼</span>
                 <span class="info-time">
                   {{ new Date(item.ctime).toLocaleString() }}
@@ -102,24 +107,7 @@
                 <n-button type="info" text @click="onReply(item)">
                   回复
                 </n-button>
-                <template v-if="userName">
-                  <n-button
-                    style="margin-left: 16px"
-                    type="info"
-                    text
-                    @click="onVerify(item)">
-                    审核
-                  </n-button>
-                  <n-button
-                    style="margin-left: 16px"
-                    type="info"
-                    text
-                    @click="onDelete(item)">
-                    删除
-                  </n-button>
-                </template>
               </p>
-              <!-- <div class="info-author" v-if="item.isAuthor">作者评论</div> -->
             </li>
           </ul>
         </div>
@@ -129,20 +117,21 @@
   </n-layout>
 </template>
 <script setup lang="ts">
-import { h, ref, watch, computed, onMounted } from 'vue'
+import { h, ref, watch, computed, nextTick, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getBlogList } from '@/api/blog'
-import { getComment, commentVerify, commentDelete } from '@/api/comment'
-import { BlogItem, CommentItem } from './data'
+import { getComment } from '@/api/comment'
+import { BlogItem, CommentItem } from '@/utils/types'
 import { MdPreview, MdCatalog } from 'md-editor-v3'
 import 'md-editor-v3/lib/preview.css'
 import { getTheme } from '@/utils/device'
 import CommentInput from './components/comment-input.vue'
 import CommentReply from './components/comment-reply.vue'
-import { LOGIN_CONF } from '@/config'
 import { isMobile } from '@/utils/device'
 import { NEllipsis } from 'naive-ui'
 import { previewImage } from '@/utils/previewImage'
+import 'highlight.js/styles/atom-one-dark.min.css'
+import hljs from 'highlight.js'
 
 const scrollElement = ref('#layoutContent .n-layout-scroll-container')
 const route = useRoute()
@@ -157,7 +146,6 @@ const currentIndex = ref<BlogItem>()
 const theme = getTheme()
 const commentData = ref<CommentItem[]>([])
 const commentReplyRef = ref()
-const userName = ref(localStorage.getItem(LOGIN_CONF.NAME) || '')
 
 const prveItem = computed(() => {
   let item: BlogItem | null = null
@@ -219,6 +207,11 @@ const getPageType = () => {
       if (id) {
         activeKey.value = id
         currentIndex.value = blogData.find(i => i._id === activeKey.value)
+        if (currentIndex.value.format === 'html') {
+          nextTick(() => {
+            hljs.highlightAll()
+          })
+        }
       }
     }
   } else {
@@ -285,6 +278,11 @@ const getBlogData = async () => {
     }
     activeKey.value = id
     currentIndex.value = blogData[idx]
+    if (currentIndex.value.format === 'html') {
+      nextTick(() => {
+        hljs.highlightAll()
+      })
+    }
     router.push({ params: { types }, query: { id } })
     setScrollTop()
   }
@@ -305,35 +303,25 @@ const onReply = (item: CommentItem) => {
   commentReplyRef.value.show(activeKey.value, item.id)
 }
 
-const onVerify = async (item: CommentItem) => {
-  const params = {
-    blogId: activeKey.value,
-    commentId: item.id,
-    isShow: !item.isShow,
-  }
-  await commentVerify(params)
-  getCommentData(activeKey.value)
-}
-
-const onDelete = (item: CommentItem) => {
-  window.$dialog.warning({
-    title: '删除',
-    content: '是否删除该评论？',
-    positiveText: '确定',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      const params = {
-        blogId: activeKey.value,
-        commentId: item.id,
-      }
-      const { data } = await commentDelete(params)
-      if (data) {
-        window.$message.success('删除成功')
-        getCommentData(activeKey.value)
-      }
-    },
-  })
-}
+// const onDelete = (item: CommentItem) => {
+//   window.$dialog.warning({
+//     title: '删除',
+//     content: '是否删除该评论？',
+//     positiveText: '确定',
+//     negativeText: '取消',
+//     onPositiveClick: async () => {
+//       const params = {
+//         blogId: activeKey.value,
+//         commentId: item.id,
+//       }
+//       const { data } = await commentDelete(params)
+//       if (data) {
+//         window.$message.success('删除成功')
+//         getCommentData(activeKey.value)
+//       }
+//     },
+//   })
+// }
 
 onMounted(() => {
   getPageType()
@@ -391,43 +379,6 @@ onMounted(() => {
           font-size: 20px;
           margin-bottom: 16px;
         }
-        .comment-list {
-          width: 800px;
-          margin: 0 auto;
-          li {
-            margin-bottom: 16px;
-          }
-          .quote-desc {
-            margin-bottom: 6px;
-            background-color: var(--border-color);
-            padding: 12px 16px;
-          }
-          .name {
-            font-size: 18px;
-            .iconfont {
-              margin-right: 6px;
-            }
-            .author {
-              font-size: 14px;
-            }
-          }
-          .desc {
-            margin-top: 6px;
-          }
-          .info {
-            font-size: 12px;
-            text-align: right;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
-            margin-top: 6px;
-            .info-id {
-              margin-right: 16px;
-            }
-            .info-time {
-              margin-right: 16px;
-            }
-          }
-        }
       }
     }
   }
@@ -444,6 +395,93 @@ onMounted(() => {
     width: 800px;
     margin: 0 auto;
     margin-top: 20px;
+  }
+
+  ::v-deep(.content-view) {
+    background-color: transparent;
+    max-width: 840px;
+    margin: 0 auto;
+    margin-top: 20px;
+    p,
+    li {
+      white-space: pre-wrap; /* 保留空格 */
+    }
+    blockquote {
+      border-left: 8px solid #d0e5f2;
+      padding: 10px 10px;
+      margin: 10px 0;
+      background-color: #f1f1f1;
+    }
+    code {
+      padding: 3px;
+      border-radius: 3px;
+    }
+    pre > code {
+      display: block;
+      padding: 10px;
+    }
+    table {
+      border-collapse: collapse;
+    }
+    td,
+    th {
+      border: 1px solid #ccc;
+      min-width: 50px;
+      height: 20px;
+    }
+    th {
+      background-color: #f1f1f1;
+    }
+    ul,
+    ol {
+      padding-left: 20px;
+    }
+    input[type='checkbox'] {
+      margin-right: 5px;
+    }
+    img,
+    video {
+      max-width: 100%;
+    }
+  }
+
+  .comment-list {
+    width: 800px;
+    margin: 0 auto;
+    --desc-border-color: rgba(0, 0, 0, 0.1);
+    li {
+      margin-bottom: 16px;
+    }
+    .quote-desc {
+      margin-bottom: 6px;
+      background-color: var(--desc-border-color);
+      padding: 12px 16px;
+    }
+    .name {
+      font-size: 18px;
+      .iconfont {
+        margin-right: 6px;
+      }
+      .author {
+        font-size: 14px;
+      }
+    }
+    .desc {
+      margin-top: 6px;
+    }
+    .info {
+      font-size: 12px;
+      text-align: right;
+      border-bottom: 1px solid var(--desc-border-color);
+      padding-bottom: 12px;
+      margin-top: 6px;
+      .info-id {
+        margin-right: 16px;
+      }
+      .info-time {
+        margin-right: 16px;
+      }
+    }
   }
 }
 
@@ -482,6 +520,29 @@ onMounted(() => {
 
     .nav-btn {
       width: 100%;
+    }
+  }
+}
+
+.dark {
+  .layout-list {
+    ::v-deep(.content-view) {
+      blockquote {
+        border-left: 8px solid #91989c;
+        padding: 10px 10px;
+        margin: 10px 0;
+        background-color: #3f3f3f;
+      }
+      td,
+      th {
+        border: 1px solid #2d2d2d !important;
+      }
+      th {
+        background-color: #000;
+      }
+    }
+    .comment-list {
+      --desc-border-color: rgba(255, 255, 255, 0.24);
     }
   }
 }

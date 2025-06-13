@@ -55,8 +55,8 @@
         </ul>
       </div>
 
-      <p class="copyright">
-        <span>Copyright © 2021-2024 sanyer | </span>
+      <p class="copyright" v-if="isCopyright">
+        <span>Copyright © 2021-{{ getYear }} {{ name }} | </span>
         <n-button text type="info" @click="onOldLink">旧版</n-button>
       </p>
     </div>
@@ -67,13 +67,15 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getBlogTop, getBlogLast } from '@/api/blog'
 import { categoryList } from '@/api/category'
-import { BlogItem } from '../list/data'
-import { CategoryItem } from '../data'
+import { CategoryItem, BlogItem } from '@/utils/types'
 
 const router = useRouter()
 const topList = ref<BlogItem[]>([])
 const lastList = ref<BlogItem[]>([])
 let typeList: Array<CategoryItem> = []
+const getYear = new Date().getFullYear()
+const isCopyright = import.meta.env.VITE_COPYRIGHT === 'true' ? true : false
+const name = import.meta.env.VITE_TITLE
 
 const getType = computed(() => {
   return function (id: string) {
@@ -119,7 +121,7 @@ const onLink = (item: BlogItem) => {
 }
 
 const onOldLink = () => {
-  const url = 'https://sanyer.top/blog/'
+  const url = import.meta.env.VITE_OLDLINK
   window.open(url, '_blank')
 }
 

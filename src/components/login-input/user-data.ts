@@ -1,7 +1,8 @@
 export const loginText = {
-  title: '登录我的博客',
+  title: import.meta.env.VITE_MANAGE,
   user: '账号登录',
   button: '登录',
+  reButton: '注册并登录',
 }
 
 export const userLoginData = () => ({

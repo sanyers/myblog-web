@@ -51,8 +51,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { categoryList, categoryDelete } from '@/api/category'
-import { CategoryItem } from '../../pages/data'
-import CategoryUpdate from './category-update.vue'
+import { CategoryItem } from '@/utils/types'
+import CategoryUpdate from './components/category-update.vue'
 
 const categoryData = ref<CategoryItem[]>([])
 const currentIndex = ref<CategoryItem>()

@@ -38,13 +38,16 @@ import UserHeader from './user-header.vue'
 import { navList } from './data'
 import { useRoute, useRouter } from 'vue-router'
 import { useMessage, useDialog } from 'naive-ui'
+import { LOGIN_CONF } from '@/config'
 
 window.$message = useMessage()
 window.$dialog = useDialog()
 const route = useRoute()
 const router = useRouter()
 const collapsed = ref(false)
-const menuOptions = ref(navList())
+const isAdmin = localStorage.getItem(LOGIN_CONF.role) === '0'
+const isUsers = import.meta.env.VITE_USERS === 'true'
+const menuOptions = ref(navList(isAdmin && isUsers))
 const activeKey = ref('')
 
 const handleUpdateValue = () => {
