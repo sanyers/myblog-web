@@ -30,11 +30,12 @@
           <i class="iconfont icon-github" @click="onLinkGithub"></i>
         </label>
         <n-dropdown
+          v-if="isLinks"
           :options="[...categoryData, ...linkOptions]"
           placement="bottom-start"
           trigger="click"
           @select="handleSelects">
-          <i class="iconfont icon-menu" v-if="isLinks"></i>
+          <i class="iconfont icon-menu"></i>
         </n-dropdown>
       </div>
     </n-layout-header>
@@ -66,6 +67,7 @@ const linkOptions = [
   { key: 'jianshu', label: '简书' },
   { key: 'github', label: 'Github' },
 ]
+
 const isLinks = import.meta.env.VITE_JIANSHU ? true : false
 
 const getCategoryData = async () => {
