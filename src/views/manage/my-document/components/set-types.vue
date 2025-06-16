@@ -19,7 +19,11 @@
             v-model:value="type2"
             :options="type2Options" />
         </div>
-        <n-button v-if="type2" class="btn-item" @click="onSave">
+        <n-button
+          v-if="type2"
+          class="btn-item"
+          @click="onSave"
+          :loading="loading">
           确定
         </n-button>
       </div>
@@ -37,6 +41,7 @@ const type1Options = ref([])
 const type2 = ref('')
 const type2Options = ref([])
 const showModal = ref(false)
+const loading = ref(false)
 let categoryData: CategoryItem[] = []
 const emits = defineEmits(['on-update'])
 
@@ -85,12 +90,14 @@ const hide = () => {
 }
 
 const onSave = async () => {
+  loading.value = true
   const params = { id, type1: type1.value, type2: type2.value }
   const { data } = await setBlogType(params)
   if (data) {
     emits('on-update')
     hide()
   }
+  loading.value = false
 }
 
 defineExpose({ show, hide })

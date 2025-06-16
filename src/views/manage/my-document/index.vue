@@ -7,27 +7,27 @@
           class="input-item min-input-item"
           v-model:value="isTop"
           :options="topOptions"
-          @update:value="getBlogList" />
+          @update:value="onUpdateType2" />
 
         <span>发布：</span>
         <n-select
           class="input-item min-input-item"
           v-model:value="release"
           :options="releaseOptions"
-          @update:value="getBlogList" />
+          @update:value="onUpdateType2" />
 
         <span>栏目：</span>
         <n-select
           class="input-item"
           v-model:value="type1"
           :options="type1Options"
-          @update:value="onUpdateType" />
+          @update:value="onUpdateType1" />
         <n-select
           class="input-item"
           v-if="type1"
           v-model:value="type2"
           :options="type2Options"
-          @update:value="getBlogList" />
+          @update:value="onUpdateType2" />
       </div>
       <div class="header-right">
         <n-button type="info" @click="onCreate"> 创建文档 </n-button>
@@ -128,7 +128,7 @@ const getBlogList = async () => {
   loading.value = false
 }
 
-const onUpdateType = () => {
+const onUpdateType1 = () => {
   type2.value = ''
   const item = categoryData.find(i => i._id === type1.value)
   if (item) {
@@ -137,6 +137,12 @@ const onUpdateType = () => {
       value: i._id,
     }))
   }
+  paginationData.value.page = 1
+  getBlogList()
+}
+
+const onUpdateType2 = () => {
+  paginationData.value.page = 1
   getBlogList()
 }
 
@@ -282,6 +288,10 @@ onMounted(async () => {
           margin-bottom: 6px;
           margin-right: 6px;
         }
+      }
+      ::v-deep(.blog-title) {
+        color: #6baffe;
+        cursor: pointer;
       }
     }
   }

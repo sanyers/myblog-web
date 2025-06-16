@@ -1,5 +1,5 @@
 <template>
-  <n-modal v-model:show="showModal">
+  <n-modal v-model:show="showModal" :mask-closable="false">
     <div class="modal-index">
       <p class="header">
         <i class="iconfont icon-close" @click="showModal = false"></i>
@@ -7,7 +7,9 @@
       <div class="title">修改创建时间</div>
       <div class="content">
         <n-date-picker v-model:value="ctime" type="datetime" />
-        <n-button class="btn-item" @click="onSave"> 确定 </n-button>
+        <n-button class="btn-item" @click="onSave" :loading="loading">
+          确定
+        </n-button>
       </div>
     </div>
   </n-modal>
@@ -19,6 +21,7 @@ import { blogTime } from '@/api/blog'
 let id = ''
 const ctime = ref(0)
 const showModal = ref(false)
+const loading = ref(false)
 const emits = defineEmits(['on-update'])
 
 const show = (_id: string, time: number) => {
@@ -32,12 +35,14 @@ const hide = () => {
 }
 
 const onSave = async () => {
+  loading.value = true
   const params = { id, time: ctime.value }
   const { data } = await blogTime(params)
   if (data) {
     emits('on-update')
     hide()
   }
+  loading.value = false
 }
 
 defineExpose({ show, hide })

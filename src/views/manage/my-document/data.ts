@@ -54,7 +54,24 @@ export const optionList = {
 
 export const getBlogData = (getTypes: Function, operateSelect: Function) => ({
   columns: [
-    { title: '标题', key: 'name' },
+    {
+      title: '标题',
+      key: 'name',
+      width: 220,
+      ellipsis: {
+        tooltip: true,
+      },
+      render(row: BlogItem) {
+        return h(
+          'span',
+          {
+            className: 'blog-title',
+            onClick: () => operateSelect('edit', row),
+          },
+          row.name,
+        )
+      },
+    },
     {
       title: '所属栏目',
       key: 'types',
