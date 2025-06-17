@@ -57,7 +57,6 @@ export const getBlogData = (getTypes: Function, operateSelect: Function) => ({
     {
       title: '标题',
       key: 'name',
-      width: 220,
       ellipsis: {
         tooltip: true,
       },
@@ -85,6 +84,7 @@ export const getBlogData = (getTypes: Function, operateSelect: Function) => ({
     {
       title: '置顶',
       key: 'isTop',
+      width: 120,
       render(row: BlogItem) {
         const txt = row.isTop ? '已置顶' : '-'
         return h('span', null, txt)
@@ -93,6 +93,7 @@ export const getBlogData = (getTypes: Function, operateSelect: Function) => ({
     {
       title: '发布状态',
       key: 'release',
+      width: 120,
       render(row: BlogItem) {
         const txt = row.release ? '已发布' : '-'
         return h('span', null, txt)
@@ -119,6 +120,7 @@ export const getBlogData = (getTypes: Function, operateSelect: Function) => ({
     {
       title: '操作',
       key: 'operation',
+      width: 120,
       render(row: BlogItem) {
         const options = []
         if (row.release) {
