@@ -4,7 +4,7 @@ export function renderIcon(icon: string) {
   return () => h('span', { className: 'iconfont ' + icon }, '')
 }
 
-export const navList = (isAdmin: boolean) => [
+export const navList = (isAdmin: boolean, isUsers: boolean) => [
   {
     label: '首页',
     key: 'manage',
@@ -22,11 +22,15 @@ export const navList = (isAdmin: boolean) => [
   },
   ...(isAdmin
     ? [
-        {
-          label: '用户管理',
-          key: 'user-manage',
-          icon: renderIcon('icon-users'),
-        },
+        ...(isUsers
+          ? [
+              {
+                label: '用户管理',
+                key: 'user-manage',
+                icon: renderIcon('icon-users'),
+              },
+            ]
+          : []),
         {
           label: '栏目管理',
           key: 'category-manage',

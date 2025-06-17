@@ -47,7 +47,7 @@ const router = useRouter()
 const collapsed = ref(false)
 const isAdmin = localStorage.getItem(LOGIN_CONF.role) === '0'
 const isUsers = import.meta.env.VITE_USERS === 'true'
-const menuOptions = ref(navList(isAdmin && isUsers))
+const menuOptions = ref(navList(isAdmin, isUsers))
 const activeKey = ref('')
 
 const handleUpdateValue = () => {
