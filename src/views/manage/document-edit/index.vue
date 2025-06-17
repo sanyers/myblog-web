@@ -121,7 +121,6 @@ const type2Options = ref([])
 
 let id = ''
 let categoryData: CategoryItem[] = []
-let fromPage = ''
 
 const formatValue = ref('md')
 const formatOptions = ref([
@@ -180,9 +179,7 @@ const getBlogbyInfo = async () => {
   }
 }
 
-const onBack = () => {
-  router.push({ name: fromPage })
-}
+const onBack = () => router.go(-1)
 
 const onRelease = async () => {
   const params = { id, release: !documentInfo.value.release }
@@ -222,10 +219,7 @@ const onSave = async () => {
   if (data) {
     window.$message.success('保存成功')
     if (!id) {
-      router.push({
-        name: 'document-edit',
-        query: { pageType: '1', id: data, from: fromPage },
-      })
+      router.replace({ query: { pageType: '1', id: data } })
       id = data
       pageType.value = '1'
       getBlogbyInfo()
@@ -269,9 +263,7 @@ onMounted(async () => {
     type1: _type1,
     type2: _type2,
     id: _id,
-    from,
   } = route.query
-  fromPage = from as string
   pageType.value = _types as string
   await getCategoryData()
   if (_types === '1') {

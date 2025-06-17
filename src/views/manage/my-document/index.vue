@@ -7,14 +7,14 @@
           class="input-item min-input-item"
           v-model:value="isTop"
           :options="topOptions"
-          @update:value="onUpdateType2" />
+          @update:value="onUpdateTop" />
 
         <span>发布：</span>
         <n-select
           class="input-item min-input-item"
           v-model:value="release"
           :options="releaseOptions"
-          @update:value="onUpdateType2" />
+          @update:value="onUpdateRelease" />
 
         <span>栏目：</span>
         <n-select
@@ -54,7 +54,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { CategoryItem, BlogItem } from '@/utils/types'
 import { categoryList } from '@/api/category'
 import { getBlogLists, blogTop, blogRelease, blogDelete } from '@/api/blog'
@@ -66,6 +66,7 @@ import SetTypes from './components/set-types.vue'
 const setTimeRef = ref()
 const setTypesRef = ref()
 
+const route = useRoute()
 const router = useRouter()
 let categoryData: CategoryItem[] = []
 const type1 = ref('')
@@ -106,6 +107,34 @@ const getCategoryData = async () => {
       value: i._id,
     }))
     type1Options.value.unshift({ label: '全部', value: '' })
+
+    const {
+      top,
+      release: r,
+      type1: t1,
+      type2: t2,
+      page,
+      pageSize,
+    } = route.query
+    if (top) {
+      isTop.value = top as string
+    }
+    if (r) {
+      release.value = r as string
+    }
+    if (t1) {
+      type1.value = t1 as string
+      getType2Options()
+    }
+    if (t2) {
+      type2.value = t2 as string
+    }
+    if (page) {
+      paginationData.value.page = Number(page)
+    }
+    if (pageSize) {
+      paginationData.value.pageSize = Number(pageSize)
+    }
   }
 }
 
@@ -128,8 +157,27 @@ const getBlogList = async () => {
   loading.value = false
 }
 
-const onUpdateType1 = () => {
-  type2.value = ''
+const onUpdateTop = () => {
+  const query = { ...route.query, top: isTop.value || undefined, page: '1' }
+  router.replace({ query })
+
+  paginationData.value.page = 1
+  getBlogList()
+}
+
+const onUpdateRelease = () => {
+  const query = {
+    ...route.query,
+    release: release.value || undefined,
+    page: '1',
+  }
+  router.replace({ query })
+
+  paginationData.value.page = 1
+  getBlogList()
+}
+
+const getType2Options = () => {
   const item = categoryData.find(i => i._id === type1.value)
   if (item) {
     type2Options.value = item.typeList.map((i: CategoryItem) => ({
@@ -137,20 +185,43 @@ const onUpdateType1 = () => {
       value: i._id,
     }))
   }
+}
+
+const onUpdateType1 = () => {
+  const query = {
+    ...route.query,
+    type1: type1.value || undefined,
+    type2: undefined,
+    page: '1',
+  }
+  router.replace({ query })
+
+  type2.value = ''
+  getType2Options()
+
   paginationData.value.page = 1
   getBlogList()
 }
 
 const onUpdateType2 = () => {
+  const query = { ...route.query, type2: type2.value || undefined, page: '1' }
+  router.replace({ query })
+
   paginationData.value.page = 1
   getBlogList()
 }
 
 const handlePage = (page: number) => {
+  const query = { ...route.query, page: page.toString() }
+  router.replace({ query })
+
   paginationData.value.page = page
   getBlogList()
 }
 const handlePageSize = (pageSize: number) => {
+  const query = { ...route.query, page: 1, pageSize: pageSize.toString() }
+  router.replace({ query })
+
   paginationData.value.page = 1
   paginationData.value.pageSize = pageSize
   getBlogList()
@@ -204,19 +275,14 @@ const onDelete = (row: BlogItem) => {
 const onEdit = (row: BlogItem) => {
   router.push({
     name: 'document-edit',
-    query: { pageType: '1', id: row._id, from: 'my-document' },
+    query: { pageType: '1', id: row._id },
   })
 }
 
 const onCreate = () => {
   router.push({
     name: 'document-edit',
-    query: {
-      pageType: '0',
-      type1: type1.value,
-      type2: type2.value,
-      from: 'my-document',
-    },
+    query: { pageType: '0', type1: type1.value, type2: type2.value },
   })
 }
 
