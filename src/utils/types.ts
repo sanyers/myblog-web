@@ -30,6 +30,7 @@ export type BlogItem = {
   authorLink: string
   release: boolean
   format: string
+  fileUrl?: string
   desc?: string
 }
 

@@ -116,6 +116,14 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/pdfview',
+    name: 'pdfview',
+    component: () => import('@/views/pdfview/index.vue'),
+    meta: {
+      title: '预览PDF',
+    },
+  },
 ]
 
 const router = createRouter({

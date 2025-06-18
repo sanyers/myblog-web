@@ -207,7 +207,6 @@ const onLogout = async () => {
 
 onMounted(() => {
   userName.value = localStorage.getItem(LOGIN_CONF.NAME)
-  console.log(111)
   getCategoryData()
 })
 </script>

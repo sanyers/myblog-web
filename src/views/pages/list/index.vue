@@ -25,11 +25,10 @@
       class="layout-content"
       v-if="isContent"
       id="layoutContent">
-      <div class="content-title">{{ currentIndex.name }}</div>
-      <!-- <div v-if="currentIndex.desc" class="content-desc" style="margin: 12px 0">
-        {{ currentIndex.desc }}
-      </div> -->
-      <div class="content-desc">
+      <div class="content-title" v-if="currentIndex.format !== 'pdf'">
+        {{ currentIndex.name }}
+      </div>
+      <div class="content-desc" v-if="currentIndex.format !== 'pdf'">
         <span>
           创建时间：{{ new Date(currentIndex.ctime).toLocaleString() }}
         </span>
@@ -60,6 +59,15 @@
           v-if="currentIndex.format === 'html'"
           class="content-view"
           v-html="currentIndex.content"></div>
+
+        <iframe
+          v-if="currentIndex.format === 'pdf'"
+          :src="getPdfUrl(currentIndex.fileUrl)"
+          class="iframe"
+          allowfullscreen
+          autoplay
+          frameborder="0"
+          allow="microphone;camera;midi;encrypted-media;"></iframe>
       </div>
 
       <div class="nav-btn">
@@ -146,6 +154,12 @@ const currentIndex = ref<BlogItem>()
 const theme = getTheme()
 const commentData = ref<CommentItem[]>([])
 const commentReplyRef = ref()
+
+const getPdfUrl = computed(() => {
+  return function (url: string) {
+    return `/pdfview?url=${location.origin}${url}`
+  }
+})
 
 const prveItem = computed(() => {
   let item: BlogItem | null = null
@@ -303,26 +317,6 @@ const onReply = (item: CommentItem) => {
   commentReplyRef.value.show(activeKey.value, item.id)
 }
 
-// const onDelete = (item: CommentItem) => {
-//   window.$dialog.warning({
-//     title: '删除',
-//     content: '是否删除该评论？',
-//     positiveText: '确定',
-//     negativeText: '取消',
-//     onPositiveClick: async () => {
-//       const params = {
-//         blogId: activeKey.value,
-//         commentId: item.id,
-//       }
-//       const { data } = await commentDelete(params)
-//       if (data) {
-//         window.$message.success('删除成功')
-//         getCommentData(activeKey.value)
-//       }
-//     },
-//   })
-// }
-
 onMounted(() => {
   getPageType()
 })
@@ -365,6 +359,10 @@ onMounted(() => {
         ::v-deep(table) {
           width: 100%;
         }
+      }
+      .iframe {
+        width: 100%;
+        height: 100vh;
       }
     }
     .content-bottom {

@@ -58,10 +58,29 @@
         <span style="margin-left: 6px">查看</span>
       </n-button>
 
-      <n-button type="info" v-if="documentInfo.content" @click="onSave">
-        <i class="iconfont icon-save"></i>
-        <span style="margin-left: 6px">保存</span>
-      </n-button>
+      <template v-if="formatValue === 'pdf'">
+        <n-button type="info" v-if="pageType === '0'" @click="onUploadPDF">
+          <i class="iconfont icon-upload"></i>
+          <span style="margin-left: 6px">上传PDF</span>
+        </n-button>
+
+        <template v-if="pageType === '1'">
+          <n-button type="info" @click="onUploadPDF">
+            <i class="iconfont icon-update"></i>
+            <span style="margin-left: 6px">更新PDF</span>
+          </n-button>
+          <n-button type="info" @click="onSave" style="margin-left: 16px">
+            <i class="iconfont icon-save"></i>
+            <span style="margin-left: 6px">保存</span>
+          </n-button>
+        </template>
+      </template>
+      <template v-else>
+        <n-button type="info" v-if="documentInfo.content" @click="onSave">
+          <i class="iconfont icon-save"></i>
+          <span style="margin-left: 6px">保存</span>
+        </n-button>
+      </template>
     </div>
     <MdEditor
       v-if="documentInfo.type2 && formatValue === 'md'"
@@ -89,6 +108,13 @@
         :style="{ height: `calc(100% - ${height}px)` }"
         @onCreated="handleCreated" />
     </div>
+    <input
+      ref="fileInputRef"
+      :key="fileInputKey"
+      type="file"
+      accept="application/pdf"
+      @change="onFileUpload"
+      class="upload-input" />
   </div>
   <div class="document-edit" v-else></div>
 </template>
@@ -126,6 +152,7 @@ const formatValue = ref('md')
 const formatOptions = ref([
   { label: 'HTML格式', value: 'html' },
   { label: 'Markdown格式', value: 'md' },
+  { label: 'PDF格式', value: 'pdf' },
 ])
 
 type ImageInsertFnType = (url: string, alt?: string, href?: string) => void
@@ -151,6 +178,28 @@ const editorConfig: any = {
       },
     },
   },
+}
+
+const fileInputKey = ref(0)
+const fileInputRef = ref()
+
+const onUploadPDF = () => {
+  fileInputRef.value.dispatchEvent(new MouseEvent('click'))
+}
+
+const onFileUpload = (evt: any) => {
+  const files = evt.target.files as Array<File>
+  const file = files[0]
+  if (!documentInfo.value.name) {
+    const name = file.name.substring(0, file.name.lastIndexOf('.'))
+    documentInfo.value.name = name
+  }
+
+  onUploadImg([file], (url: Array<string>) => {
+    documentInfo.value.fileUrl = url[0]
+    onSave()
+  })
+  fileInputKey.value++
 }
 
 const handleCreated = (editor: any) => {
@@ -214,6 +263,9 @@ const onSave = async () => {
   }
   if (id) {
     params.id = id
+  }
+  if (documentInfo.value.fileUrl) {
+    params.fileUrl = documentInfo.value.fileUrl
   }
   const { data } = await blogUpdate(params)
   if (data) {
@@ -298,6 +350,9 @@ onMounted(async () => {
 .document-edit {
   height: 100%;
   --html-border-color: #ccc;
+  .upload-input {
+    display: none;
+  }
   .header {
     margin-bottom: 16px;
     display: flex;
